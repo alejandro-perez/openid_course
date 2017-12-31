@@ -82,7 +82,7 @@ class Client(object):
             # },
         }
 
-        auth_req = self.client.construct_AuthorizationRequest(request_args=args)
+        self.client.authz_req = auth_req = self.client.construct_AuthorizationRequest(request_args=args)
 
         # DONE insert the redirect URL
         login_url = auth_req.request(self.client.authorization_endpoint)
@@ -104,6 +104,7 @@ class Client(object):
 
         # DONE? validate the ID Token according to the OpenID Connect spec (sec 3.1.3.7.)
         assert (session['nonce'] == resp['id_token']['nonce'])
+        self.client.verify_id_token(resp['id_token'], self.client.authz_req)
 
         # DONE make userinfo request
         userinfo = self.client.do_user_info_request(state=aresp["state"])
